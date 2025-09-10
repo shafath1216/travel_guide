@@ -1,0 +1,101 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ city.name }} - Bangladesh Travel Guide</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 min-h-screen font-sans text-gray-800">
+
+  <!-- Navbar -->
+  <nav class="bg-white shadow-md fixed w-full z-50">
+    <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+      <div class="text-2xl font-bold text-gray-800">Travel Bangladesh</div>
+      <div class="space-x-4">
+        <a href="{% url 'cities' %}" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition">Back to Cities</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container mx-auto mt-28 px-6">
+
+    <!-- City Name -->
+    <h1 class="text-4xl font-bold text-gray-800 mb-8 text-center">Explore {{ city.name }}</h1>
+
+    <!-- Google Map Embed -->
+    {% if city.google_map_embed %}
+      <section class="mb-12">
+        {{ city.google_map_embed|safe }}
+      </section>
+    {% endif %}
+
+    <!-- Attractions -->
+    {% if city.attractions.all %}
+    <section class="space-y-12 mb-12">
+      <h2 class="text-3xl font-bold text-gray-800 mb-6">Top Attractions</h2>
+      {% for attraction in city.attractions.all %}
+      <article class="flex flex-col md:flex-row {% if forloop.counter|divisibleby:2 %}md:flex-row-reverse{% endif %} items-center md:items-start space-y-8 md:space-y-0 md:space-x-6 md:space-x-reverse">
+        {% if attraction.image %}
+          <img src="{{ attraction.image.url }}" alt="{{ attraction.name }}" class="w-full md:w-1/2 h-auto object-cover rounded-lg shadow-md">
+        {% else %}
+          <img src="{% static 'images/placeholder.jpg' %}" alt="No Image" class="w-full md:w-1/2 h-auto object-cover rounded-lg shadow-md">
+        {% endif %}
+        <div class="md:w-1/2 md:px-6">
+          <h3 class="text-3xl font-bold text-gray-800 mb-2">{{ attraction.name }}</h3>
+          <p class="text-lg text-gray-700 mb-2">{{ attraction.description }}</p>
+          {% if attraction.entry_fee %}
+          <p class="text-gray-600 font-semibold text-lg">Entry Fee: {{ attraction.entry_fee }}</p>
+          {% endif %}
+        </div>
+      </article>
+      {% endfor %}
+    </section>
+    {% endif %}
+
+    <!-- Hotels -->
+    {% if city.hotels.all %}
+    <section class="space-y-6 mb-12">
+      <h2 class="text-3xl font-bold text-gray-800 mb-4">Hotels in {{ city.name }}</h2>
+      <ul class="bg-white rounded-xl shadow-md divide-y divide-gray-200">
+        {% for hotel in city.hotels.all %}
+        <li class="p-6">
+          <h3 class="font-semibold text-gray-800 text-xl mb-1">{{ hotel.name|default:"Unnamed Hotel" }}</h3>
+          {% if hotel.address %}<p class="text-gray-600 text-lg mt-1">Address: {{ hotel.address }}</p>{% endif %}
+          {% if hotel.phone %}<p class="text-gray-600 text-lg">Phone: {{ hotel.phone }}</p>{% endif %}
+          {% if hotel.website %}<p class="text-gray-600 text-lg">Website: {{ hotel.website }}</p>{% endif %}
+        </li>
+        {% endfor %}
+      </ul>
+    </section>
+    {% endif %}
+
+    <!-- Restaurants -->
+    {% if city.restaurants.all %}
+    <section class="space-y-6 mb-12">
+      <h2 class="text-3xl font-bold text-gray-800 mb-4">Restaurants in {{ city.name }}</h2>
+      <ul class="bg-white rounded-xl shadow-md divide-y divide-gray-200">
+        {% for restaurant in city.restaurants.all %}
+        <li class="p-6">
+          <h3 class="font-semibold text-gray-800 text-xl mb-1">{{ restaurant.name|default:"Unnamed Restaurant" }}</h3>
+          {% if restaurant.address %}<p class="text-gray-600 text-lg mt-1">Address: {{ restaurant.address }}</p>{% endif %}
+          {% if restaurant.phone %}<p class="text-gray-600 text-lg">Phone: {{ restaurant.phone }}</p>{% endif %}
+          {% if restaurant.website %}<p class="text-gray-600 text-lg">Website: {{ restaurant.website }}</p>{% endif %}
+        </li>
+        {% endfor %}
+      </ul>
+    </section>
+    {% endif %}
+
+  </div>
+
+  <!-- Footer -->
+  <footer class="mt-16 bg-white shadow-inner py-6">
+    <div class="container mx-auto text-center text-gray-600">
+      &copy; 2025 Travel Bangladesh. All rights reserved.
+    </div>
+  </footer>
+
+</body>
+</html>
