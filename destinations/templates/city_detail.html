@@ -19,83 +19,84 @@
     </div>
   </nav>
 
-  <div class="container mx-auto mt-28 px-6">
+  <!-- City Section -->
+  <div class="container mx-auto px-6 py-24">
+    <h1 class="text-4xl font-bold mb-4">{{ city.name }}</h1>
+    <p class="text-lg mb-6">{{ city.description }}</p>
 
-    <!-- City Name -->
-    <h1 class="text-4xl font-bold text-gray-800 mb-8 text-center">Explore {{ city.name }}</h1>
-
-    <!-- Google Map Embed -->
+    <!-- Google Map -->
     {% if city.google_map_embed %}
-      <section class="mb-12">
+      <div class="mb-8">
         {{ city.google_map_embed|safe }}
-      </section>
+      </div>
     {% endif %}
 
     <!-- Attractions -->
-    {% if city.attractions.all %}
-    <section class="space-y-12 mb-12">
-      <h2 class="text-3xl font-bold text-gray-800 mb-6">Top Attractions</h2>
+    <h2 class="text-2xl font-semibold mb-4">Attractions</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
       {% for attraction in city.attractions.all %}
-      <article class="flex flex-col md:flex-row {% if forloop.counter|divisibleby:2 %}md:flex-row-reverse{% endif %} items-center md:items-start space-y-8 md:space-y-0 md:space-x-6 md:space-x-reverse">
-        {% if attraction.image %}
-          <img src="{{ attraction.image.url }}" alt="{{ attraction.name }}" class="w-full md:w-1/2 h-auto object-cover rounded-lg shadow-md">
-        {% else %}
-          <img src="{% static 'images/placeholder.jpg' %}" alt="No Image" class="w-full md:w-1/2 h-auto object-cover rounded-lg shadow-md">
-        {% endif %}
-        <div class="md:w-1/2 md:px-6">
-          <h3 class="text-3xl font-bold text-gray-800 mb-2">{{ attraction.name }}</h3>
-          <p class="text-lg text-gray-700 mb-2">{{ attraction.description }}</p>
+        <div class="bg-white rounded-lg shadow-md p-4">
+          <img src="{{ attraction.image.url }}" alt="{{ attraction.name }}" class="w-full h-48 object-cover rounded">
+          <h3 class="text-xl font-bold mt-2">{{ attraction.name }}</h3>
+          <p class="text-gray-600">{{ attraction.description }}</p>
           {% if attraction.entry_fee %}
-          <p class="text-gray-600 font-semibold text-lg">Entry Fee: {{ attraction.entry_fee }}</p>
+            <p class="text-sm text-gray-500 mt-1">Entry Fee: {{ attraction.entry_fee }}</p>
           {% endif %}
         </div>
-      </article>
+      {% empty %}
+        <p>No attractions listed for this city yet.</p>
       {% endfor %}
-    </section>
-    {% endif %}
+    </div>
 
     <!-- Hotels -->
-    {% if city.hotels.all %}
-    <section class="space-y-6 mb-12">
-      <h2 class="text-3xl font-bold text-gray-800 mb-4">Hotels in {{ city.name }}</h2>
-      <ul class="bg-white rounded-xl shadow-md divide-y divide-gray-200">
-        {% for hotel in city.hotels.all %}
-        <li class="p-6">
-          <h3 class="font-semibold text-gray-800 text-xl mb-1">{{ hotel.name|default:"Unnamed Hotel" }}</h3>
-          {% if hotel.address %}<p class="text-gray-600 text-lg mt-1">Address: {{ hotel.address }}</p>{% endif %}
-          {% if hotel.phone %}<p class="text-gray-600 text-lg">Phone: {{ hotel.phone }}</p>{% endif %}
-          {% if hotel.website %}<p class="text-gray-600 text-lg">Website: {{ hotel.website }}</p>{% endif %}
+    <h2 class="text-2xl font-semibold mb-4">Hotels</h2>
+    <ul class="list-disc pl-6 mb-8">
+      {% for hotel in city.hotels.all %}
+        <li class="mb-2">
+          <span class="font-semibold">{{ hotel.name }}</span> - {{ hotel.address }} <br>
+          <span class="text-sm text-gray-500">{{ hotel.phone }} | {{ hotel.website }}</span>
         </li>
-        {% endfor %}
-      </ul>
-    </section>
-    {% endif %}
+      {% empty %}
+        <p>No hotels available yet.</p>
+      {% endfor %}
+    </ul>
 
     <!-- Restaurants -->
-    {% if city.restaurants.all %}
-    <section class="space-y-6 mb-12">
-      <h2 class="text-3xl font-bold text-gray-800 mb-4">Restaurants in {{ city.name }}</h2>
-      <ul class="bg-white rounded-xl shadow-md divide-y divide-gray-200">
-        {% for restaurant in city.restaurants.all %}
-        <li class="p-6">
-          <h3 class="font-semibold text-gray-800 text-xl mb-1">{{ restaurant.name|default:"Unnamed Restaurant" }}</h3>
-          {% if restaurant.address %}<p class="text-gray-600 text-lg mt-1">Address: {{ restaurant.address }}</p>{% endif %}
-          {% if restaurant.phone %}<p class="text-gray-600 text-lg">Phone: {{ restaurant.phone }}</p>{% endif %}
-          {% if restaurant.website %}<p class="text-gray-600 text-lg">Website: {{ restaurant.website }}</p>{% endif %}
+    <h2 class="text-2xl font-semibold mb-4">Restaurants</h2>
+    <ul class="list-disc pl-6 mb-8">
+      {% for restaurant in city.restaurants.all %}
+        <li class="mb-2">
+          <span class="font-semibold">{{ restaurant.name }}</span> - {{ restaurant.address }} <br>
+          <span class="text-sm text-gray-500">{{ restaurant.phone }} | {{ restaurant.website }}</span>
         </li>
-        {% endfor %}
-      </ul>
-    </section>
+      {% empty %}
+        <p>No restaurants available yet.</p>
+      {% endfor %}
+    </ul>
+
+    <!-- Reviews Section -->
+    <h2 class="text-2xl font-semibold mb-4">Reviews</h2>
+    {% if user.is_authenticated %}
+      <form method="POST" class="mb-6">
+        {% csrf_token %}
+        <textarea name="text" rows="3" placeholder="Write your review..." class="w-full p-3 border rounded-lg mb-2"></textarea>
+        <button type="submit" class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition">Post Review</button>
+      </form>
+    {% else %}
+      <p><a href="{% url 'login' %}" class="text-blue-500 underline">Login</a> to write a review.</p>
     {% endif %}
 
-  </div>
-
-  <!-- Footer -->
-  <footer class="mt-16 bg-white shadow-inner py-6">
-    <div class="container mx-auto text-center text-gray-600">
-      &copy; 2025 Travel Bangladesh. All rights reserved.
+    <div class="space-y-4">
+      {% for review in reviews %}
+        <div class="bg-white shadow p-4 rounded-lg">
+          <p class="font-semibold">{{ review.user.username }}</p>
+          <p class="text-gray-700">{{ review.text }}</p>
+          <p class="text-xs text-gray-500 mt-1">{{ review.created_at|date:"M d, Y H:i" }}</p>
+        </div>
+      {% empty %}
+        <p>No reviews yet. Be the first to write one!</p>
+      {% endfor %}
     </div>
-  </footer>
-
+  </div>
 </body>
 </html>

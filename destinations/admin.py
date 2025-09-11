@@ -1,5 +1,17 @@
 from django.contrib import admin
-from .models import City, Attraction, Hotel, Restaurant
+from .models import City, Attraction, Hotel, Restaurant,Package
+
+
+class PackageAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name', 'city', 'price', 'duration_days')
+    list_display_links = ('name',)
+    search_fields = ('name', 'city__name')
+    list_filter = ('city',)
+    list_per_page = 20
+
+
+
+
 
 # ---------------------------
 # City Admin
@@ -47,3 +59,4 @@ admin.site.register(City, CityAdmin)
 admin.site.register(Attraction, AttractionAdmin)
 admin.site.register(Hotel, HotelAdmin)
 admin.site.register(Restaurant, RestaurantAdmin)
+admin.site.register(Package, PackageAdmin)
