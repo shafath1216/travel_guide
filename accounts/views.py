@@ -15,10 +15,8 @@ from destinations.models import City
 def home(request):
     return render(request, 'home.html')
 
-# ----------------------
-# Cities view (login required)
-# ----------------------
-@login_required
+
+
 def cities(request):
     query = request.GET.get('q')  # Get search term from URL query parameter
     if query:
@@ -34,19 +32,25 @@ def cities(request):
     })
 # Login view
 # ----------------------
-def login_view(request):
-    if request.method == 'POST':
-        username = request.POST.get('username', '').strip()
-        password = request.POST.get('password', '').strip()
-        user = authenticate(request, username=username, password=password)
-        if user:
-            auth_login(request, user)
-            messages.success(request, f'Welcome back, {user.username}!')
-            return redirect('cities')
-        else:
-            messages.error(request, 'Invalid username or password.')
-    return render(request, 'login.html')
+from django.contrib import messages
 
+def login_view(request):
+    # If 'next' exists in GET, show message
+    if request.GET.get('next'):
+        messages.info(request, 'You need to log in to view the page you requested.')
+
+    if request.method == 'POST':
+        # your existing login logic
+        username = request.POST['username']
+        password = request.POST['password']
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            auth_login(request, user)
+            return redirect('cities')  # default redirect
+        else:
+            messages.error(request, 'Invalid credentials')
+
+    return render(request, 'login.html')
 # ----------------------
 # Signup view
 # ----------------------
@@ -79,4 +83,4 @@ def signup_view(request):
 def logout_view(request):
     logout(request)
     messages.success(request, 'You have successfully logged out.')
-    return redirect('home')
+    return redirect('cities')
