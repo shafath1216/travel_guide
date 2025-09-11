@@ -20,8 +20,18 @@ def home(request):
 # ----------------------
 @login_required
 def cities(request):
-    cities_list = City.objects.all()  # get all cities from DB
-    return render(request, 'cities.html', {"cities": cities_list})
+    query = request.GET.get('q')  # Get search term from URL query parameter
+    if query:
+        # Filter cities by name containing the search term (case-insensitive)
+        cities_list = City.objects.filter(name__icontains=query)
+    else:
+        # If no search term, show all cities
+        cities_list = City.objects.all()
+    
+    return render(request, 'cities.html', {
+        "cities": cities_list,
+        "query": query  # Pass the query back to template to keep it in the input box
+    })
 # Login view
 # ----------------------
 def login_view(request):
